@@ -1,0 +1,12 @@
+1. Angle Calculation using IMU :
+--- Contains all the source files
+--- Works with 2 IMU sensor 
+--- If ID of IMU is different, change it in the CalculQuat.java
+--- Directly run the GUI, for the real time angle feedback.
+
+2. Power calculation:
+--- Read me file is given inside the folder
+
+3.  Reference Material
+--- All the reference material is given there.
+

@@ -1,0 +1,94 @@
+Overview (What’s been done)
+
+Four parts of system:
+
+1. EMG sensor: collect raw data from the input source
+
+2. Receiver host (PC): local storage to store the input data
+
+3. Server: 
+
+4. End device for visualisation: display the data in end device for observing and analysis
+
+ 
+
+Raw Data
+
+filter of the noise from raw data: Band Stop filter, Hight Pass filter 
+                                   and Root Mean Square(RMS) filter(for the power signal display on server)
+                                   implemented on host system
+
+6 EMG channels
+
+Shimmer API: Shimmer Class: ShimmerPC class, communicate with sensors.
+             each sensor required a single instance of this class
+
+Data format: ObjectCluster Data (Shimmer’s own data structure), is consist of PropertyCluster (MultiMap)
+             MultiMap: key-value pair
+                       key: property
+                       value: FormatCluster(Shimmer Object)
+
+
+Shimmer Class: Wrapped ShimmerPC object 
+               provide method to interact with devices, receive raw data from filters before repackaging to another object
+               Implement High Pass Filters and Band Pass Filters to remove noise from raw data
+
+Data Object: stores multiple data points along with a time stamp (For data synchronisation)
+             ConcurrentSkipListSet
+
+Data synchronisation issue: lack of Real Time Clock
+                            Timestamp:
+
+Controller Class:Four components{
+                 list of shimmer objects
+                 number of RMS filters (for each channel of data)
+                 concurrently accessible Data Archive
+                 Storage class (deal with logging) }
+
+                 Initialising each of these components before waiting for data processing => retrieve data from respective 
+                 
+                 Storage class initialising: Controller class pass a reference of itself 
+                                             => then Storage class can access the central archive
+                                             => storage class read from central archive (while controller class is adding data)
+                 Controller implement Observer interface which wait for shimmer class’s notifications 
+                 about whether there is data in its buffers
+
+RMS Object: RMS class: implementation of moving window RMS filter
+
+Storage Class: deal with all loggings of data(for both local file and to the server)
+               logging file is enabled => access local file and write data
+               keep running and polling the central archive to check whether the new data is added
+               Ensure the data is old enough to send => pass the data onto helper method => parse it into a suitable string
+               => write to file:
+               (another copy will send to another class for sending to the server, separate thread from storage class)
+
+Config class: helper class - throughout the rest of the program with static variables
+              by changing the declaration in Config class =>{
+              Filter settings, Device settings, Logging settings}
+
+Run the EMG application with guided configurations
+                
+
+David: N1403288L@e.ntu.edu.sg
+
+Jaya
+                                             
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
